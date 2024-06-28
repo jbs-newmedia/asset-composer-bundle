@@ -79,42 +79,6 @@ Finally, you need to render the stylesheets and javaScripts in your HTML. This c
 
 By following these steps, you can seamlessly manage and include assets from the `vendor` directory in your Symfony project, ensuring they are always up-to-date.
 
-### Example
-
-To include assets in your project, add the following to your twig template:
-
-```twig
-{% extends 'base.html.twig' %}
-
-{% do addAssetComposer('twbs/bootstrap/dist/css/bootstrap.css') %}
-{% do addAssetComposer('components/font-awesome/css/all.css') %}
-{% do addAssetComposer('avalynx/avalynx-alert/dist/css/avalynx-alert.css') %}
-{% do addAssetComposer('avalynx/avalynx-alert/dist/js/avalynx-alert.js') %}
-```
-
-```twig
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-            {{ renderAssetComposerStylesheets() }}
-        {% endblock %}
-
-        {% block javascripts %}
-            {{ renderAssetComposerJavascripts() }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-
-        {{ renderAssetComposerJavascripts('bottom') }}
-    </body>
-</html>
-```
-
 ### File Structure Overview
 
 - **src**
