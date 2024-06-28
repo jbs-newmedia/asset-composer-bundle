@@ -18,13 +18,4 @@ class AssetComposerBundle extends AbstractBundle
 
         return $this->extension;
     }
-
-    public function prependExtension(ContainerConfigurator $container, ContainerBuilder $builder): void
-    {
-        $projectDir = $builder->getParameter('kernel.project_dir');
-        $filePath = $projectDir.'/config/routes/asset_composer.yaml';
-        $bundlePath = __DIR__.'/Resources/config/routes.yaml';
-
-        file_put_contents($filePath, file_get_contents($bundlePath));
-    }
 }
