@@ -1,5 +1,5 @@
 jbs_new_media_assets_composer:
-  path: /assets/composer/{namespace}/{package}/{asset}
+  path: /assetscomposer/{namespace}/{package}/{asset}
   controller: JBSNewMedia\AssetComposerBundle\Controller\AssetComposerController::getAsset
   requirements:
     namespace: '[a-zA-Z_][a-zA-Z0-9_-]*'
