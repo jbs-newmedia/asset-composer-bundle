@@ -3,7 +3,7 @@
   "type": "symfony-bundle",
   "license": "MIT",
   "description": "A Symfony bundle to help you manage your assets",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     {
       "name": "Juergen Schwind",
