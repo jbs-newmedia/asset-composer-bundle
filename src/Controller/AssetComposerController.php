@@ -10,6 +10,6 @@ class AssetComposerController extends AbstractController
 {
     public function getAsset(string $namespace, string $package, string $asset, AssetComposer $AssetComposer): Response
     {
-        return $AssetComposer->getAssetFile($namespace, $package, $asset, $this->getParameter('kernel.project_dir'));
+        return $AssetComposer->getAssetFile($namespace, $package, $asset);
     }
 }

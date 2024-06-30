@@ -5,19 +5,34 @@ namespace JBSNewMedia\AssetComposerBundle\Service;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    public function getAssetFile(string $namespace, string $package, string $asset, string $projectDir): Response
+    private string $projectDir;
+    private UrlGeneratorInterface $router;
+
+    public function __construct(string $projectDir, UrlGeneratorInterface $router)
     {
-        $vendorDir = $projectDir.'/vendor/'.$namespace.'/'.$package.'/';
+        $this->projectDir = $projectDir;
+        $this->router = $router;
+    }
+
+    public function getAssetFile(string $namespace, string $package, string $asset): Response
+    {
+        if (('app' === $namespace) && ('assets' === $package)) {
+            $vendorDir = $this->projectDir.'/assets/';
+        } else {
+            $vendorDir = $this->projectDir.'/vendor/'.$namespace.'/'.$package.'/';
+        }
+
         if (!is_dir($vendorDir)) {
-            throw new BadRequestHttpException('Vendor not found');
+            throw new BadRequestHttpException('Asset not found in vendor directory');
         }
 
         $vendorFile = $vendorDir.$asset;
         if (substr(realpath($vendorFile), 0, strlen($vendorDir)) !== $vendorDir) {
-            throw new BadRequestHttpException('Asset not found');
+            throw new BadRequestHttpException('vendor directory traversal detected');
         }
 
         $fileType = pathinfo($vendorFile, PATHINFO_EXTENSION);
@@ -48,13 +63,28 @@ class AssetComposer
         return $response;
     }
 
-    public function getAssetFileName(string $asset, string $projectDir): string
+    public function getAssetFileName(string $asset): string
     {
-        $vendorFile = $projectDir.'/vendor/'.$asset;
-        if (substr(realpath($vendorFile), 0, strlen($projectDir)) !== $projectDir) {
+        $assetParts = explode('/', $asset);
+        if (count($assetParts) < 3) {
             throw new BadRequestHttpException('Asset not found');
         }
 
-        return 'assets/composer/'.$asset.'?v='.filemtime($vendorFile);
+        if (('app' === $assetParts[0]) && ('assets' === $assetParts[1])) {
+            $vendorFile = $this->projectDir.'/assets/'.implode('/', array_slice($assetParts, 2));
+        } else {
+            $vendorFile = $this->projectDir.'/vendor/'.$asset;
+            if (substr(realpath($vendorFile), 0, strlen($this->projectDir)) !== $this->projectDir) {
+                throw new BadRequestHttpException('Asset not found2');
+            }
+        }
+
+        $baseUrl = $this->router->generate('jbs_new_media_assets_composer', [
+            'namespace' => $assetParts[0],
+            'package' => $assetParts[1],
+            'asset' => implode('/', array_slice($assetParts, 2)),
+        ], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return $baseUrl.'?v='.filemtime($vendorFile);
     }
 }

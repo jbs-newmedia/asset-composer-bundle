@@ -10,12 +10,10 @@ use Twig\TwigFunction;
 class AssetsComposerExtension extends AbstractExtension
 {
     public AssetComposer $assetComposer;
-    public string $projectDir;
     private $assets = [];
 
-    public function __construct(string $projectDir, AssetComposer $assetComposer)
+    public function __construct(AssetComposer $assetComposer)
     {
-        $this->projectDir = $projectDir;
         $this->assetComposer = $assetComposer;
     }
 
@@ -49,8 +47,7 @@ class AssetsComposerExtension extends AbstractExtension
         if ((isset($this->assets[$position])) && (isset($this->assets[$position]['css'])) && ([] !== $this->assets[$position]['css'])) {
             foreach ($this->assets[$position]['css'] as $assetFilename) {
                 $stylesheets .= '<link rel="stylesheet" href="'.$this->assetComposer->getAssetFileName(
-                    $assetFilename,
-                    $this->projectDir
+                    $assetFilename
                 ).'">';
             }
         }
@@ -64,8 +61,7 @@ class AssetsComposerExtension extends AbstractExtension
         if ((isset($this->assets[$position])) && (isset($this->assets[$position]['js'])) && ([] !== $this->assets[$position]['js'])) {
             foreach ($this->assets[$position]['js'] as $assetFilename) {
                 $javascripts .= '<script src="'.$this->assetComposer->getAssetFileName(
-                    $assetFilename,
-                    $this->projectDir
+                    $assetFilename
                 ).'"></script>';
             }
         }

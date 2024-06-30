@@ -13,7 +13,8 @@ services:
         tags: [ 'controller.service_arguments' ]
 
     JBSNewMedia\AssetComposerBundle\Service\AssetComposer:
-
-    JBSNewMedia\AssetComposerBundle\Twig\AssetsComposerExtension:
         arguments:
             $projectDir: '%kernel.project_dir%'
+            $router : '@router'
+
+    JBSNewMedia\AssetComposerBundle\Twig\AssetsComposerExtension:
