@@ -42,22 +42,46 @@ class AssetComposer
         $response->headers->set('Cache-Control', 'max-age=315360000, public');
         $response->headers->set('Pragma', 'cache');
         $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', filemtime($vendorFile)));
-        switch ($fileType) {
-            case 'js':
-                $response->headers->set('Content-Type', 'application/javascript');
-                break;
-            case 'css':
-                $response->headers->set('Content-Type', 'text/css');
 
-                break;
-            case 'json':
-                $response = new JsonResponse(json_decode($content, true));
+        $contentTypes = [
+            'csv' => 'text/csv',
+            'css' => 'text/css',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'eot' => 'font/eot',
+            'gif' => 'image/gif',
+            'gz' => 'application/gzip',
+            'html' => 'text/html',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'js' => 'application/javascript',
+            'json' => 'application/json',
+            'mp3' => 'audio/mpeg',
+            'mp4' => 'video/mp4',
+            'oga' => 'audio/ogg',
+            'ogv' => 'video/ogg',
+            'otf' => 'font/otf',
+            'pdf' => 'application/pdf',
+            'png' => 'image/png',
+            'svg' => 'image/svg+xml',
+            'tar' => 'application/x-tar',
+            'ttf' => 'font/ttf',
+            'wav' => 'audio/wav',
+            'webm' => 'video/webm',
+            'webp' => 'image/webp',
+            'woff' => 'font/woff',
+            'woff2' => 'font/woff2',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xml' => 'application/xml',
+            'zip' => 'application/zip',
+        ];
 
-                break;
-            default:
-                $response->headers->set('Content-Type', 'text/plain');
-
-                break;
+        if (isset($contentTypes[$fileType])) {
+            $contentType = $contentTypes[$fileType];
+            $response->headers->set('Content-Type', $contentType);
+        } else {
+            $response->headers->set('Content-Type', 'text/plain');
         }
 
         return $response;
