@@ -3,6 +3,7 @@
 namespace JBSNewMedia\AssetComposerBundle\Twig;
 
 use JBSNewMedia\AssetComposerBundle\Service\AssetComposer;
+use mysql_xdevapi\SqlStatementResult;
 use Twig\Extension\AbstractExtension;
 use Twig\Markup;
 use Twig\TwigFunction;
@@ -42,28 +43,28 @@ class AssetsComposerExtension extends AbstractExtension
         }
     }
 
-    public function renderStylesheets(string $position = 'all'): Markup
+    public function renderStylesheets(string $position = 'all', string $prefix = '', string $suffix = ''): Markup
     {
         $stylesheets = '';
         if ((isset($this->assets[$position])) && (isset($this->assets[$position]['css'])) && ([] !== $this->assets[$position]['css'])) {
             foreach ($this->assets[$position]['css'] as $assetFilename) {
-                $stylesheets .= '<link rel="stylesheet" href="'.$this->assetComposer->getAssetFileName(
+                $stylesheets .= $prefix . '<link rel="stylesheet" href="'.$this->assetComposer->getAssetFileName(
                     $assetFilename
-                ).'">';
+                ).'">' . $suffix;
             }
         }
 
         return new Markup($stylesheets, 'UTF-8');
     }
 
-    public function renderJavascripts(string $position = 'all'): Markup
+    public function renderJavascripts(string $position = 'all', string $prefix = '', string $suffix = ''): Markup
     {
         $javascripts = '';
         if ((isset($this->assets[$position])) && (isset($this->assets[$position]['js'])) && ([] !== $this->assets[$position]['js'])) {
             foreach ($this->assets[$position]['js'] as $assetFilename) {
-                $javascripts .= '<script src="'.$this->assetComposer->getAssetFileName(
+                $javascripts .= $prefix . '<script src="'.$this->assetComposer->getAssetFileName(
                     $assetFilename
-                ).'"></script>';
+                ).'"></script>' . $suffix;
             }
         }
 
