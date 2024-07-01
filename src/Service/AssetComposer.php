@@ -75,8 +75,12 @@ class AssetComposer
         } else {
             $vendorFile = $this->projectDir.'/vendor/'.$asset;
             if (substr(realpath($vendorFile), 0, strlen($this->projectDir)) !== $this->projectDir) {
-                throw new BadRequestHttpException('Asset not found2');
+                throw new BadRequestHttpException('Asset not found');
             }
+        }
+
+        if (!file_exists($vendorFile)) {
+            throw new BadRequestHttpException('Asset not found (' . str_replace($this->projectDir . '/', '', $vendorFile) . ')' );
         }
 
         $baseUrl = $this->router->generate('jbs_new_media_assets_composer', [

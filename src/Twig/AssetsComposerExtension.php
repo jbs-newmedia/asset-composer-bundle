@@ -20,13 +20,14 @@ class AssetsComposerExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('addAssetComposer', [$this, 'assetComposer']),
+            new TwigFunction('addAssetComposer', [$this, 'addAssetComposer']),
             new TwigFunction('renderAssetComposerStylesheets', [$this, 'renderStylesheets']),
             new TwigFunction('renderAssetComposerJavascripts', [$this, 'renderJavascripts']),
+            new TwigFunction('getAssetComposerFile', [$this, 'getAssetComposerFile']),
         ];
     }
 
-    public function assetComposer(string $assetFilename, string $position = 'all'): void
+    public function addAssetComposer(string $assetFilename, string $position = 'all'): void
     {
         $assetInfo = pathinfo($assetFilename);
         switch ($assetInfo['extension']) {
@@ -67,5 +68,10 @@ class AssetsComposerExtension extends AbstractExtension
         }
 
         return new Markup($javascripts, 'UTF-8');
+    }
+
+    public function getAssetComposerFile(string $assetFilename): string
+    {
+        return $this->assetComposer->getAssetFileName($assetFilename);
     }
 }
