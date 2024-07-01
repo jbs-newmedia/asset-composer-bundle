@@ -2,7 +2,6 @@
 
 namespace JBSNewMedia\AssetComposerBundle\Service;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -104,7 +103,7 @@ class AssetComposer
         }
 
         if (!file_exists($vendorFile)) {
-            throw new BadRequestHttpException('Asset not found (' . str_replace($this->projectDir . '/', '', $vendorFile) . ')' );
+            throw new BadRequestHttpException('Asset not found ('.str_replace($this->projectDir.'/', '', $vendorFile).')');
         }
 
         $baseUrl = $this->router->generate('jbs_new_media_assets_composer', [
