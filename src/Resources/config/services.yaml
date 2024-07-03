@@ -17,4 +17,4 @@ services:
             $projectDir: '%kernel.project_dir%'
             $router : '@router'
 
-    JBSNewMedia\AssetComposerBundle\Twig\AssetsComposerExtension:
+    JBSNewMedia\AssetComposerBundle\Twig\AssetComposerExtension:

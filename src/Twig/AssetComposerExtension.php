@@ -7,7 +7,7 @@ use Twig\Extension\AbstractExtension;
 use Twig\Markup;
 use Twig\TwigFunction;
 
-class AssetsComposerExtension extends AbstractExtension
+class AssetComposerExtension extends AbstractExtension
 {
     public AssetComposer $assetComposer;
     private $assets = [];
