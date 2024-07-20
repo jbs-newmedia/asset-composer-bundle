@@ -20,7 +20,6 @@ Check for errors.
 
     composer run bin-phpstan
 
-
 ### Run Rector
 
 Check for code smells.
