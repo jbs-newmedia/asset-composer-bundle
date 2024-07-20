@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 class AssetComposerExtension extends Extension implements PrependExtensionInterface
 {
-    public function load(array $configs, ContainerBuilder $container):void
+    public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
         $this->processConfiguration($configuration, $configs);
@@ -29,7 +29,7 @@ class AssetComposerExtension extends Extension implements PrependExtensionInterf
             throw new \InvalidArgumentException('The kernel.project_dir parameter must be a string.');
         }
 
-        $filePath = $projectDir . '/config/routes/asset_composer.yaml';
+        $filePath = $projectDir.'/config/routes/asset_composer.yaml';
         $bundlePath = __DIR__.'/../Resources/config/routes.yaml';
 
         if (!file_exists($filePath)) {

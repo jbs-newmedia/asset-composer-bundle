@@ -16,7 +16,7 @@ class AssetComposerBundle extends AbstractBundle
             $this->extension = new AssetComposerExtension();
         }
 
-        if ($this->extension===false) {
+        if (false === $this->extension) {
             return null;
         }
 

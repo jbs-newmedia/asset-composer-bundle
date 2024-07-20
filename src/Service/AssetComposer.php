@@ -28,13 +28,13 @@ class AssetComposer
 
         $vendorFile = $vendorDir.$asset;
         $realVendorFilePath = realpath($vendorFile);
-        if ($realVendorFilePath === false || !str_starts_with($realVendorFilePath, $vendorDir)) {
+        if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $vendorDir)) {
             throw new BadRequestHttpException('vendor directory traversal detected');
         }
 
         $fileType = pathinfo($vendorFile, PATHINFO_EXTENSION);
         $content = file_get_contents($vendorFile);
-        if ($content === false) {
+        if (false === $content) {
             throw new BadRequestHttpException('Unable to read the asset file');
         }
         $response = new Response($content);
@@ -43,7 +43,7 @@ class AssetComposer
         $response->headers->set('Pragma', 'cache');
 
         $fileMTime = filemtime($vendorFile);
-        if ($fileMTime === false) {
+        if (false === $fileMTime) {
             throw new BadRequestHttpException('Unable to get the file modification time');
         }
         $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $fileMTime));
@@ -105,7 +105,7 @@ class AssetComposer
         } else {
             $vendorFile = $this->projectDir.'/vendor/'.$asset;
             $realVendorFilePath = realpath($vendorFile);
-            if ($realVendorFilePath === false || !str_starts_with($realVendorFilePath, $this->projectDir)) {
+            if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $this->projectDir)) {
                 throw new BadRequestHttpException('Asset not found');
             }
         }
@@ -121,7 +121,7 @@ class AssetComposer
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
         $fileMTime = filemtime($vendorFile);
-        if ($fileMTime === false) {
+        if (false === $fileMTime) {
             throw new BadRequestHttpException('Unable to get the file modification time');
         }
 
