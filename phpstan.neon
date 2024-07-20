@@ -1,6 +1,0 @@
-includes:
-    - phpstan-global.neon
-parameters:
-    level: 8
-    editorUrl: 'phpstorm://open?file=%relFile&line=%line'
-    editorUrlTitle: '%%relFile%%:%%line%%'
