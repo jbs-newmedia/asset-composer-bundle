@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    public function __construct(private string $projectDir, private UrlGeneratorInterface $router)
+    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router)
     {
     }
 
@@ -27,17 +27,26 @@ class AssetComposer
         }
 
         $vendorFile = $vendorDir.$asset;
-        if (!str_starts_with(realpath($vendorFile), $vendorDir)) {
+        $realVendorFilePath = realpath($vendorFile);
+        if ($realVendorFilePath === false || !str_starts_with($realVendorFilePath, $vendorDir)) {
             throw new BadRequestHttpException('vendor directory traversal detected');
         }
 
         $fileType = pathinfo($vendorFile, PATHINFO_EXTENSION);
         $content = file_get_contents($vendorFile);
+        if ($content === false) {
+            throw new BadRequestHttpException('Unable to read the asset file');
+        }
         $response = new Response($content);
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', strtotime('+10 years')));
         $response->headers->set('Cache-Control', 'max-age=315360000, public');
         $response->headers->set('Pragma', 'cache');
-        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', filemtime($vendorFile)));
+
+        $fileMTime = filemtime($vendorFile);
+        if ($fileMTime === false) {
+            throw new BadRequestHttpException('Unable to get the file modification time');
+        }
+        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $fileMTime));
 
         $contentTypes = [
             'csv' => 'text/csv',
@@ -59,6 +68,7 @@ class AssetComposer
             'otf' => 'font/otf',
             'pdf' => 'application/pdf',
             'png' => 'image/png',
+            'rar' => 'application/vnd.rar',
             'svg' => 'image/svg+xml',
             'tar' => 'application/x-tar',
             'ttf' => 'font/ttf',
@@ -94,7 +104,8 @@ class AssetComposer
             $vendorFile = $this->projectDir.'/assets/'.implode('/', array_slice($assetParts, 2));
         } else {
             $vendorFile = $this->projectDir.'/vendor/'.$asset;
-            if (!str_starts_with(realpath($vendorFile), $this->projectDir)) {
+            $realVendorFilePath = realpath($vendorFile);
+            if ($realVendorFilePath === false || !str_starts_with($realVendorFilePath, $this->projectDir)) {
                 throw new BadRequestHttpException('Asset not found');
             }
         }
@@ -109,6 +120,11 @@ class AssetComposer
             'asset' => implode('/', array_slice($assetParts, 2)),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        return $baseUrl.'?v='.filemtime($vendorFile);
+        $fileMTime = filemtime($vendorFile);
+        if ($fileMTime === false) {
+            throw new BadRequestHttpException('Unable to get the file modification time');
+        }
+
+        return $baseUrl.'?v='.$fileMTime;
     }
 }
