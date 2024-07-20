@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\Twig;
 
 use JBSNewMedia\AssetComposerBundle\Service\AssetComposer;
@@ -9,12 +11,10 @@ use Twig\TwigFunction;
 
 class AssetComposerExtension extends AbstractExtension
 {
-    public AssetComposer $assetComposer;
     private $assets = [];
 
-    public function __construct(AssetComposer $assetComposer)
+    public function __construct(public AssetComposer $assetComposer)
     {
-        $this->assetComposer = $assetComposer;
     }
 
     public function getFunctions(): array

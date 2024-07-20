@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\Controller;
 
 use JBSNewMedia\AssetComposerBundle\Service\AssetComposer;

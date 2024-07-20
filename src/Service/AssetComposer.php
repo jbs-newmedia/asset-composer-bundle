@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\Service;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -8,13 +10,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    private string $projectDir;
-    private UrlGeneratorInterface $router;
-
-    public function __construct(string $projectDir, UrlGeneratorInterface $router)
+    public function __construct(private string $projectDir, private UrlGeneratorInterface $router)
     {
-        $this->projectDir = $projectDir;
-        $this->router = $router;
     }
 
     public function getAssetFile(string $namespace, string $package, string $asset): Response
@@ -30,7 +27,7 @@ class AssetComposer
         }
 
         $vendorFile = $vendorDir.$asset;
-        if (substr(realpath($vendorFile), 0, strlen($vendorDir)) !== $vendorDir) {
+        if (!str_starts_with(realpath($vendorFile), $vendorDir)) {
             throw new BadRequestHttpException('vendor directory traversal detected');
         }
 
@@ -97,7 +94,7 @@ class AssetComposer
             $vendorFile = $this->projectDir.'/assets/'.implode('/', array_slice($assetParts, 2));
         } else {
             $vendorFile = $this->projectDir.'/vendor/'.$asset;
-            if (substr(realpath($vendorFile), 0, strlen($this->projectDir)) !== $this->projectDir) {
+            if (!str_starts_with(realpath($vendorFile), $this->projectDir)) {
                 throw new BadRequestHttpException('Asset not found');
             }
         }
