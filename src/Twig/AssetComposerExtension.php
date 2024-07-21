@@ -23,10 +23,10 @@ class AssetComposerExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('addAssetComposer', [$this, 'addAssetComposer']),
-            new TwigFunction('renderAssetComposerStylesheets', [$this, 'renderStylesheets']),
-            new TwigFunction('renderAssetComposerJavascripts', [$this, 'renderJavascripts']),
-            new TwigFunction('getAssetComposerFile', [$this, 'getAssetComposerFile']),
+            new TwigFunction('addAssetComposer', $this->addAssetComposer(...)),
+            new TwigFunction('renderAssetComposerStylesheets', $this->renderStylesheets(...)),
+            new TwigFunction('renderAssetComposerJavascripts', $this->renderJavascripts(...)),
+            new TwigFunction('getAssetComposerFile', $this->getAssetComposerFile(...)),
         ];
     }
 
