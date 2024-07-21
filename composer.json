@@ -57,7 +57,7 @@
       "composer bin phpstan update"
     ],
     "bin-phpstan": [
-      "export PROJECT_PATH=${PROJECT_PATH}; vendor-bin/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"
+      "vendor-bin/phpstan/vendor/bin/phpstan analyse --configuration=phpstan.neon"
     ],
     "bin-phpstan-v": [
       "vendor-bin/phpstan/vendor/bin/phpstan -V"
