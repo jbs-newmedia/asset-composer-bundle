@@ -23,7 +23,7 @@ class AssetComposer
         }
 
         if (!is_dir($vendorDir)) {
-            throw new BadRequestHttpException('Asset not found in vendor directory');
+            throw new BadRequestHttpException('vendor directory not found');
         }
 
         $vendorFile = $vendorDir.$asset;
@@ -97,7 +97,7 @@ class AssetComposer
     {
         $assetParts = explode('/', $asset);
         if (count($assetParts) < 3) {
-            throw new BadRequestHttpException('Asset not found');
+            throw new BadRequestHttpException('Asset not found (invalid asset path)');
         }
 
         if (('app' === $assetParts[0]) && ('assets' === $assetParts[1])) {
@@ -106,7 +106,7 @@ class AssetComposer
             $vendorFile = $this->projectDir.'/vendor/'.$asset;
             $realVendorFilePath = realpath($vendorFile);
             if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $this->projectDir)) {
-                throw new BadRequestHttpException('Asset not found');
+                throw new BadRequestHttpException('Asset not found ('.str_replace($this->projectDir.'/', '', $vendorFile).')');
             }
         }
 
