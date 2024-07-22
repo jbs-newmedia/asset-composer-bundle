@@ -16,5 +16,8 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
             $router : '@router'
+            $paths: '%asset_composer.paths%'
 
     JBSNewMedia\AssetComposerBundle\Twig\AssetComposerExtension:
+
+

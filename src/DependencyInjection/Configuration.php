@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -9,13 +11,15 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder('mycorp_forms');
+        $treeBuilder = new TreeBuilder('asset_composer');
 
-        $treeBuilder->getRootNode()
+        $rootNode = $treeBuilder->getRootNode();
+        $rootNode
             ->children()
-            ->booleanNode('favorite_submenu_enabled')->defaultFalse()->end()
-            ->end()
-        ;
+               ->arrayNode('paths')
+                    ->scalarPrototype()->end()
+                ->end()
+            ->end();
 
         return $treeBuilder;
     }

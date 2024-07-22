@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\Twig;
 
 use JBSNewMedia\AssetComposerBundle\Service\AssetComposer;
@@ -9,27 +11,32 @@ use Twig\TwigFunction;
 
 class AssetComposerExtension extends AbstractExtension
 {
-    public AssetComposer $assetComposer;
-    private $assets = [];
+    /**
+     * @var array<string, array<string, array<string, string>>>
+     */
+    protected array $assets = [];
 
-    public function __construct(AssetComposer $assetComposer)
+    public function __construct(protected AssetComposer $assetComposer)
     {
-        $this->assetComposer = $assetComposer;
     }
 
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('addAssetComposer', [$this, 'addAssetComposer']),
-            new TwigFunction('renderAssetComposerStylesheets', [$this, 'renderStylesheets']),
-            new TwigFunction('renderAssetComposerJavascripts', [$this, 'renderJavascripts']),
-            new TwigFunction('getAssetComposerFile', [$this, 'getAssetComposerFile']),
+            new TwigFunction('addAssetComposer', $this->addAssetComposer(...)),
+            new TwigFunction('renderAssetComposerStylesheets', $this->renderStylesheets(...)),
+            new TwigFunction('renderAssetComposerJavascripts', $this->renderJavascripts(...)),
+            new TwigFunction('getAssetComposerFile', $this->getAssetComposerFile(...)),
         ];
     }
 
     public function addAssetComposer(string $assetFilename, string $position = 'all'): void
     {
         $assetInfo = pathinfo($assetFilename);
+        if (!isset($assetInfo['extension'])) {
+            throw new \InvalidArgumentException('Invalid asset type');
+        }
+
         switch ($assetInfo['extension']) {
             case 'css':
                 $this->assets[$position]['css'][$assetFilename] = $assetFilename;

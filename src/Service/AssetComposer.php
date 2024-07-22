@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle\Service;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -8,39 +10,60 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    private string $projectDir;
-    private UrlGeneratorInterface $router;
-
-    public function __construct(string $projectDir, UrlGeneratorInterface $router)
+    /**
+     * @param string[] $paths Array of paths
+     */
+    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router, protected array $paths = [])
     {
-        $this->projectDir = $projectDir;
-        $this->router = $router;
+        if ([] === $this->paths) {
+            $this->paths = [
+                '/vendor/',
+            ];
+        } else {
+            $this->paths[] = '/vendor/';
+        }
     }
 
     public function getAssetFile(string $namespace, string $package, string $asset): Response
     {
+        $vendorDir = '';
         if (('app' === $namespace) && ('assets' === $package)) {
             $vendorDir = $this->projectDir.'/assets/';
         } else {
-            $vendorDir = $this->projectDir.'/vendor/'.$namespace.'/'.$package.'/';
+            foreach ($this->paths as $path) {
+                $vendorDir = $this->projectDir.$path.$namespace.'/'.$package.'/';
+                if (is_dir($vendorDir)) {
+                    break;
+                }
+            }
         }
 
         if (!is_dir($vendorDir)) {
-            throw new BadRequestHttpException('Asset not found in vendor directory');
+            throw new BadRequestHttpException('vendor directory not found');
         }
 
         $vendorFile = $vendorDir.$asset;
-        if (substr(realpath($vendorFile), 0, strlen($vendorDir)) !== $vendorDir) {
+        $realVendorFilePath = realpath($vendorFile);
+        if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $vendorDir)) {
             throw new BadRequestHttpException('vendor directory traversal detected');
         }
 
         $fileType = pathinfo($vendorFile, PATHINFO_EXTENSION);
         $content = file_get_contents($vendorFile);
+        if (false === $content) {
+            throw new BadRequestHttpException('Unable to read the asset file');
+        }
+
         $response = new Response($content);
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', strtotime('+10 years')));
         $response->headers->set('Cache-Control', 'max-age=315360000, public');
         $response->headers->set('Pragma', 'cache');
-        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', filemtime($vendorFile)));
+
+        $fileMTime = filemtime($vendorFile);
+        if (false === $fileMTime) {
+            throw new BadRequestHttpException('Unable to get the file modification time');
+        }
+        $response->headers->set('Last-Modified', gmdate('D, d M Y H:i:s \G\M\T', $fileMTime));
 
         $contentTypes = [
             'csv' => 'text/csv',
@@ -62,6 +85,7 @@ class AssetComposer
             'otf' => 'font/otf',
             'pdf' => 'application/pdf',
             'png' => 'image/png',
+            'rar' => 'application/vnd.rar',
             'svg' => 'image/svg+xml',
             'tar' => 'application/x-tar',
             'ttf' => 'font/ttf',
@@ -90,15 +114,23 @@ class AssetComposer
     {
         $assetParts = explode('/', $asset);
         if (count($assetParts) < 3) {
-            throw new BadRequestHttpException('Asset not found');
+            throw new BadRequestHttpException('Asset not found (invalid asset path)');
         }
 
         if (('app' === $assetParts[0]) && ('assets' === $assetParts[1])) {
             $vendorFile = $this->projectDir.'/assets/'.implode('/', array_slice($assetParts, 2));
         } else {
-            $vendorFile = $this->projectDir.'/vendor/'.$asset;
-            if (substr(realpath($vendorFile), 0, strlen($this->projectDir)) !== $this->projectDir) {
-                throw new BadRequestHttpException('Asset not found');
+            $vendorFile = '';
+            foreach ($this->paths as $path) {
+                $vendorFile = $this->projectDir.$path.$asset;
+                if (is_file($vendorFile)) {
+                    break;
+                }
+            }
+
+            $realVendorFilePath = realpath($vendorFile);
+            if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $this->projectDir)) {
+                throw new BadRequestHttpException('Asset not found ('.str_replace($this->projectDir.'/', '', $vendorFile).')');
             }
         }
 
@@ -112,6 +144,11 @@ class AssetComposer
             'asset' => implode('/', array_slice($assetParts, 2)),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        return $baseUrl.'?v='.filemtime($vendorFile);
+        $fileMTime = filemtime($vendorFile);
+        if (false === $fileMTime) {
+            throw new BadRequestHttpException('Unable to get the file modification time');
+        }
+
+        return $baseUrl.'?v='.$fileMTime;
     }
 }

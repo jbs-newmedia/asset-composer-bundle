@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace JBSNewMedia\AssetComposerBundle;
 
 use JBSNewMedia\AssetComposerBundle\DependencyInjection\AssetComposerExtension;
@@ -12,6 +14,10 @@ class AssetComposerBundle extends AbstractBundle
     {
         if (null === $this->extension) {
             $this->extension = new AssetComposerExtension();
+        }
+
+        if (false === $this->extension) {
+            return null;
         }
 
         return $this->extension;
