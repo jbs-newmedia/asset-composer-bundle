@@ -10,9 +10,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router, protected array $paths)
+    /**
+     * @param string[] $paths Array of paths
+     */
+    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router, protected array $paths = [])
     {
-        if ($this->paths === []) {
+        if ([] === $this->paths) {
             $this->paths = [
                 '/vendor/',
             ];
