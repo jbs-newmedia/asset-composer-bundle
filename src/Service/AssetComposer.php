@@ -10,16 +10,29 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class AssetComposer
 {
-    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router)
+    public function __construct(protected string $projectDir, protected UrlGeneratorInterface $router, protected array $paths)
     {
+        if ($this->paths === []) {
+            $this->paths = [
+                '/vendor/',
+            ];
+        } else {
+            $this->paths[] = '/vendor/';
+        }
     }
 
     public function getAssetFile(string $namespace, string $package, string $asset): Response
     {
+        $vendorDir = '';
         if (('app' === $namespace) && ('assets' === $package)) {
             $vendorDir = $this->projectDir.'/assets/';
         } else {
-            $vendorDir = $this->projectDir.'/vendor/'.$namespace.'/'.$package.'/';
+            foreach ($this->paths as $path) {
+                $vendorDir = $this->projectDir.$path.$namespace.'/'.$package.'/';
+                if (is_dir($vendorDir)) {
+                    break;
+                }
+            }
         }
 
         if (!is_dir($vendorDir)) {
@@ -37,6 +50,7 @@ class AssetComposer
         if (false === $content) {
             throw new BadRequestHttpException('Unable to read the asset file');
         }
+
         $response = new Response($content);
         $response->headers->set('Expires', gmdate('D, d M Y H:i:s \G\M\T', strtotime('+10 years')));
         $response->headers->set('Cache-Control', 'max-age=315360000, public');
@@ -103,7 +117,14 @@ class AssetComposer
         if (('app' === $assetParts[0]) && ('assets' === $assetParts[1])) {
             $vendorFile = $this->projectDir.'/assets/'.implode('/', array_slice($assetParts, 2));
         } else {
-            $vendorFile = $this->projectDir.'/vendor/'.$asset;
+            $vendorFile = '';
+            foreach ($this->paths as $path) {
+                $vendorFile = $this->projectDir.$path.$asset;
+                if (is_file($vendorFile)) {
+                    break;
+                }
+            }
+
             $realVendorFilePath = realpath($vendorFile);
             if (false === $realVendorFilePath || !str_starts_with($realVendorFilePath, $this->projectDir)) {
                 throw new BadRequestHttpException('Asset not found ('.str_replace($this->projectDir.'/', '', $vendorFile).')');

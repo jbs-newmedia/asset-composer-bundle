@@ -15,25 +15,27 @@ class AssetComposerExtension extends Extension implements PrependExtensionInterf
     public function load(array $configs, ContainerBuilder $container): void
     {
         $configuration = new Configuration();
-        $this->processConfiguration($configuration, $configs);
+        $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $container->setParameter('asset_composer.paths', $config['paths'] ?? []);
+
+        $loader = new YamlFileLoader(
+            $container,
+            new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yaml');
     }
 
-    public function prepend(ContainerBuilder $builder): void
+    public function prepend(ContainerBuilder $container): void
     {
-        $projectDir = $builder->getParameter('kernel.project_dir');
-
+        $projectDir = $container->getParameter('kernel.project_dir');
         if (!is_string($projectDir)) {
             throw new \InvalidArgumentException('The kernel.project_dir parameter must be a string.');
         }
 
         $filePath = $projectDir.'/config/routes/asset_composer.yaml';
-        $bundlePath = __DIR__.'/../Resources/config/routes.yaml';
-
+        $bundleFile = __DIR__.'/../Resources/config/routes.yaml';
         if (!file_exists($filePath)) {
-            file_put_contents($filePath, file_get_contents($bundlePath));
+            file_put_contents($filePath, file_get_contents($bundleFile));
         }
     }
 }
