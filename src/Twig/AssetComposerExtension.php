@@ -24,6 +24,7 @@ class AssetComposerExtension extends AbstractExtension
     {
         return [
             new TwigFunction('addAssetComposer', $this->addAssetComposer(...)),
+            new TwigFunction('removeAssetComposer', $this->removeAssetComposer(...)),
             new TwigFunction('renderAssetComposerStylesheets', $this->renderStylesheets(...)),
             new TwigFunction('renderAssetComposerJavascripts', $this->renderJavascripts(...)),
             new TwigFunction('getAssetComposerFile', $this->getAssetComposerFile(...)),
@@ -43,6 +44,29 @@ class AssetComposerExtension extends AbstractExtension
                 break;
             case 'js':
                 $this->assets[$position]['js'][$assetFilename] = $assetFilename;
+                break;
+            default:
+                throw new \InvalidArgumentException('Invalid asset type');
+        }
+    }
+
+    public function removeAssetComposer(string $assetFilename, string $position = 'all'): void
+    {
+        $assetInfo = pathinfo($assetFilename);
+        if (!isset($assetInfo['extension'])) {
+            throw new \InvalidArgumentException('Invalid asset type');
+        }
+
+        switch ($assetInfo['extension']) {
+            case 'css':
+                if (!isset($this->assets[$position]['css'][$assetFilename])) {
+                    unset($this->assets[$position]['css'][$assetFilename]);
+                }
+                break;
+            case 'js':
+                if (isset($this->assets[$position]['js'][$assetFilename])) {
+                    unset($this->assets[$position]['js'][$assetFilename]);
+                }
                 break;
             default:
                 throw new \InvalidArgumentException('Invalid asset type');
