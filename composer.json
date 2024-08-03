@@ -1,5 +1,5 @@
 {
-  "name": "jbsnewmedia/assetcomposerbundle",
+  "name": "jbsnewmedia/asset-composer-bundle",
   "type": "symfony-bundle",
   "license": "MIT",
   "description": "A Symfony bundle to help you manage your assets",
