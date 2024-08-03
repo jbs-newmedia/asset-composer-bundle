@@ -1311,7 +1311,7 @@
                 "shasum": ""
             },
             "require": {
-                "jbsnewmedia/assetcomposerbundle": "*",
+                "jbsnewmedia/asset-composer-bundle": "*",
                 "php-cs-fixer/shim": "*",
                 "symfony/asset": "*",
                 "symfony/debug-pack": "*",
@@ -1360,7 +1360,7 @@
             "time": "2024-06-30T19:08:51+00:00"
         },
         {
-            "name": "jbsnewmedia/assetcomposerbundle",
+            "name": "jbsnewmedia/asset-composer-bundle",
             "version": "1.0.3",
             "source": {
                 "type": "git",

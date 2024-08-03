@@ -12,7 +12,7 @@ A Symfony bundle to help you manage your assets directly from the `vendor` direc
 To install AssetComposerBundle, you need to use [Composer](https://getcomposer.org/). Run the following command in your project root:
 
 ```bash
-composer require jbsnewmedia/assetcomposerbundle
+composer require jbsnewmedia/asset-composer-bundle
 ```
 
 ## Usage
